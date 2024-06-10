@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-// http://localhost:3000/api
+// http://localhost:3000/pokedex
 
-const pokedex = [{id: "1" ,pokemon: "bulbasaur", type: "grass"}, {id: "2", pokemon: "charmander", type: "fire"}, {id: "3", pokemon: "charizard", type: "fire"}];
+//Edit: You may want to use PARSE INT if you decide to use id = 1 not a string
+
+const pokedex = [{id: 1 ,pokemon: "bulbasaur", type: "grass"}, {id: 2, pokemon: "charmander", type: "fire"}, {id: 3, pokemon: "charizard", type: "fire"}];
 
 // Checks the status of get
 router.get("/", (req, res) => {
@@ -22,11 +24,13 @@ router.get("/", (req, res) => {
 router.get("/:pokemonId", (req, res) => {
     console.log("get id = success");
     const pokemonId = req.params.pokemonId;
-    let pokemon = 0
+    // Edit: pokemon 0 --> [] empty array
+    // Edit: Added 'parsINT' in the else section
+    let pokemon = [];
     if (pokemonId === "fire" || pokemonId === "grass" || pokemonId === "water") {
         pokemon = pokedex.filter( (pokemon) => pokemon.type === pokemonId);
     }else {
-        pokemon = pokedex.find( (pokemons) => pokemons.pokemon === pokemonId || pokemons.id === pokemonId)
+        pokemon = pokedex.find( (pokemons) => pokemons.pokemon === pokemonId || pokemons.id === parseInt(pokemonId))
     };
     console.log(pokemon, pokemonId);
     res.status(200).json({
@@ -42,7 +46,9 @@ router.get("/:pokemonId", (req, res) => {
 // post pokemon
 router.post("/", (req, res) => {
     console.log("post = success");
-    const pokemon = {id: req.body.id, pokemon: req.body.pokemon , type: req.body.type};
+    //EDIT: Don't be redundant
+    //const pokemon = {id: req.body.id, pokemon: req.body.pokemon , type: req.body.type};
+    const pokemon = req.body;
     pokedex.push(pokemon)
     res.status(200).json({
         message: "Post - success",
@@ -75,8 +81,14 @@ router.patch("/:pokemonId", (req, res) => {
     console.log("patch = success");
     const {pokemonId} = req.params;
     const pokemonIndex = pokedex.findIndex( (pokemons) => pokemons.id === pokemonId);
-    pokedex[pokemonIndex].pokemon = (req.body.pokemon === undefined) ? pokedex[pokemonIndex].pokemon : req.body.pokemon;
-    pokedex[pokemonIndex].type = (req.body.type === undefined) ? pokedex[pokemonIndex].type : req.body.type ;
+
+    // Edit:
+    const update = { ...pokedex[pokemonIndex], ...req.body};
+    pokedex[pokemonIndex] = update;
+    
+    // pokedex[pokemonIndex].pokemon = (req.body.pokemon === undefined) ? pokedex[pokemonIndex].pokemon : req.body.pokemon;
+    // pokedex[pokemonIndex].type = (req.body.type === undefined) ? pokedex[pokemonIndex].type : req.body.type;
+
     res.status(200).json({
         message: "patch - success",
         pokedex,
