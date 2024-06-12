@@ -49,42 +49,75 @@ router.post("/", (req, res) => {
     //EDIT: Don't be redundant
     //const pokemon = {id: req.body.id, pokemon: req.body.pokemon , type: req.body.type};
     const pokemon = req.body;
-    pokedex.push(pokemon)
-    res.status(200).json({
-        message: "Post - success",
-        pokedex,
-        metadata: {
-            hostname: req.hostname, 
-            method: req.method,
-        }
-    })
+    if (pokedex.includes(id=pokemon.id)) {
+        pokedex.push(pokemon);
+        res.status(200).json({
+            message: "Post - success",
+            pokedex,
+            metadata: {
+                hostname: req.hostname, 
+                method: req.method,
+            }
+        })
+    } else {
+        console.log("post = failed. duplicate id, please use another id number");
+        res.status(300).json({
+            message: "There is a duplicate pokemon ID. Please use another id",
+            pokedex,
+            metadata: {
+                hostname: req.hostname, 
+                method: req.method,
+            }
+        })
+    }
 });
 
 // delete by pokemon id
 router.delete("/:pokemonId", (req, res) => {
     console.log("delete id = success");
     const {pokemonId} = req.params;
-    const pokemonIndex = pokedex.findIndex( (pokemons) => pokemons.id === pokemonId);
-    pokedex.splice(pokemonIndex, 1)
-    res.status(200).json({
-        message: "delete - success",
-        metadata: {
-            hostname: req.hostname, 
-            pokedex,
-            method: req.method,
-        }
-    })
+    const pokemonIdInt = parseInt(pokemonId);
+    const pokemonIndex = pokedex.findIndex( (pokemons) => pokemons.id === pokemonIdInt);
+    const test = pokedex.some( (pokemons) => pokemons.id === pokemonIdInt);
+    console.log(pokedex);
+    if (test){
+        pokedex.splice(pokemonIndex, 1)
+        res.status(200).json({
+            message: "delete - success",
+            metadata: {
+                hostname: req.hostname, 
+                pokedex,
+                method: req.method,
+            }
+        })
+    } else {
+        console.log ("ID does not exist")
+        res.status(300).json({
+            message: "delete - failed",
+            metadata: {
+                hostname: req.hostname, 
+                pokedex,
+                method: req.method,
+            }
+        })
+    }
 });
 
 // patch by id / name
 router.patch("/:pokemonId", (req, res) => {
     console.log("patch = success");
-    const {pokemonId} = req.params;
-    const pokemonIndex = pokedex.findIndex( (pokemons) => pokemons.id === pokemonId);
 
-    // Edit:
+    const {pokemonId} = req.params;
+    const pokemonIdInt = parseInt(pokemonId);
+    const pokemonIndex = pokedex.findIndex( (pokemons) => pokemons.id === pokemonIdInt);
+
+    console.log(pokemonIndex);
+
+
+    //Edit:
     const update = { ...pokedex[pokemonIndex], ...req.body};
     pokedex[pokemonIndex] = update;
+
     
     // pokedex[pokemonIndex].pokemon = (req.body.pokemon === undefined) ? pokedex[pokemonIndex].pokemon : req.body.pokemon;
     // pokedex[pokemonIndex].type = (req.body.type === undefined) ? pokedex[pokemonIndex].type : req.body.type;
