@@ -49,7 +49,8 @@ router.post("/", (req, res) => {
     //EDIT: Don't be redundant
     //const pokemon = {id: req.body.id, pokemon: req.body.pokemon , type: req.body.type};
     const pokemon = req.body;
-    if (pokedex.includes(id=pokemon.id)) {
+    const test = pokedex.some( (pokemons) => pokemons.id === pokemon.id)
+    if (!test) {
         pokedex.push(pokemon);
         res.status(200).json({
             message: "Post - success",
