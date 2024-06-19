@@ -38,8 +38,7 @@ const getRegionById = async (req, res) => {
 };
 
 const createRegion = async (req, res) => {
-    // http://localhost:3000/pokedex/pokemon 
-    // example pokemon = [{name: "bulbasaur", type: "Grass", description: "A seed pokemon used to sprout????" region:"Kanto"}]
+    // http://localhost:3000/pokedex/regions
     const {region} = req.body;
     try {
         const newRegion = await Regions.create(region);
@@ -60,14 +59,14 @@ const createRegion = async (req, res) => {
 }
 
 const deleteRegionById = async (req, res) => {
-    // http://localhost:3000/pokedex/pokemon/id
+    // http://localhost:3000/pokedex/regions/id
     const {id} = req.params;
     try {
         const deleteRegion = await Regions.findByIdAndDelete(id);
         console.log("data >>>", deleteRegion);
         res.status(200).json({
             success:true, 
-            message: `${req.method} - request to Region endpoint. ${deletePokemon.name} is now gone`
+            message: `${req.method} - request to Region endpoint. ${deleteRegion.name} is now gone`
         });
     } catch (error) {
         console.log(error);
@@ -78,14 +77,26 @@ const deleteRegionById = async (req, res) => {
     }
 };
 
-const updateRegionById = (req, res) => {
-    // http://localhost:3000/pokedex/pokemon/id
+const updateRegionById = async (req, res) => {
+    // http://localhost:3000/pokedex/regions/id
     const {id} = req.params;
-    res.status(200).json({
-        id,
-        success:true,
-        message: `${req.method} - request to Author endpoint`
-    });
+    console.log(id);
+    const update = req.body;
+    console.log(update); 
+    try {
+        await Regions.findByIdAndUpdate(id, update, {new:true});
+        res.status(200).json({
+            data: [update, id],
+            success:true, 
+            message: `${req.method} - request to Region endpoint.`
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message:`update failed: Id not found OR value doesn't exist`
+        })
+    }
 };
 
 // patch by id / name
