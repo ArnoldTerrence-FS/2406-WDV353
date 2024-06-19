@@ -2,12 +2,20 @@ const Pokemon = require("../models/Pokemon");
 
 const getAllPokemon = async (req, res) => {
     // http://localhost:3000/pokedex/pokemon
+    try {
     const pokemon = await Pokemon.find({});
     res.status(200).json({
         data: pokemon,
         success:true,
         message: `${req.method} - Request to Pokemon endpoint`
     });
+    } catch (error){
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message:`${req.method} failed`
+        })
+    }
 };
 
 const getPokemonById = async (req, res) => {
@@ -16,24 +24,23 @@ const getPokemonById = async (req, res) => {
     try {
         const pokemon = await Pokemon.findById(id);
         if (pokemon === null){
-            console.log("data >>>", pokemon);
-            res.status(500).json({
+            res.status(404).json({
                 success: false, 
                 message: `Pokemon Id not found. Please find the correct Id`
             });
         } else {
             console.log("data >>>", pokemon);
-            res.status(200).json({
+            res.status(202).json({
                 data: pokemon,
-                success:true,
-                message: `${req.method} - pokemon found.`
+                success: true,
+                message: `${req.method} accepted - pokemon found.`
             });
         }
     } catch (error) {
         console.log(error);
         res.status(500).json({
             success: false,
-            message:`get failed: something is wrong with Id`
+            message:`${req.method} failed`
         })
     }
 };
@@ -45,9 +52,9 @@ const createPokemon = async (req, res) => {
     try {
         const newPokemon = await Pokemon.create(pokemon);
         console.log("pokemon entered", newPokemon);
-        res.status(200).json({
+        res.status(201).json({
             success:true, 
-            message: `${req.method} - request to Pokemon endpoint`
+            message: `${req.method} - Pokemon Created`
         });
     } catch (error) {
         if (error.name == "ValidationError") {
@@ -66,9 +73,9 @@ const deletePokemonById = async (req, res) => {
     try {
         const deletePokemon = await Pokemon.findByIdAndDelete(id);
         console.log("data >>>", deletePokemon);
-        res.status(200).json({
+        res.status(202).json({
             success:true, 
-            message: `${req.method} - request to Pokemon endpoint. ${deletePokemon.name} is now gone`
+            message: `${req.method} - ${deletePokemon.name} deleted`
         });
     } catch (error) {
         console.log(error);
@@ -82,11 +89,21 @@ const deletePokemonById = async (req, res) => {
 const updatePokemonById = (req, res) => {
     // http://localhost:3000/pokedex/pokemon/id
     const {id} = req.params;
-    res.status(200).json({
-        id,
-        success:true,
-        message: `${req.method} - request to Author endpoint`
-    });
+    try {
+        res.status(202).json({
+            id,
+            success:true,
+            message: `${req.method} - request to Author endpoint`
+        });
+    } catch (error) {
+        if (error.name == "ValidationError") {
+            console.error("Error Validation!", error);
+            res.status(422).json(error)
+        } else {
+            console.log(error);
+            res.status(500).json(error)
+        }
+    }
 };
 
 // patch by id / name

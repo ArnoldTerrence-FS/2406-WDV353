@@ -3,11 +3,19 @@ const Regions = require("../models/Region")
 const getAllRegions = async (req, res) => {
     // http://localhost:3000/pokedex/regions
     const region = await Regions.find({});
-    res.status(200).json({
-        data: region,
-        success:true,
-        message: `${req.method} - Request to Region endpoint`
-    });
+    try {
+        res.status(200).json({
+            data: region,
+            success:true,
+            message: `${req.method} - Request to Region endpoint`
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message:`${req.method} failed`
+        })
+    }
 };
 
 const getRegionById = async (req, res) => {
@@ -16,13 +24,13 @@ const getRegionById = async (req, res) => {
     try {
         const region = await Regions.findById(id);
         if (region === null){
-            res.status(500).json({
+            res.status(404).json({
                 success: false, 
                 message: `Region Id not found. Please find the correct Id`
             });
         } else {
             console.log("data >>>", region);
-            res.status(200).json({
+            res.status(202).json({
                 data: region,
                 success:true,
                 message: `${req.method} - region found.`
@@ -32,7 +40,7 @@ const getRegionById = async (req, res) => {
         console.log(error);
         res.status(500).json({
             success: false,
-            message:`get failed: something is wrong with Id`
+            message:`${req.method} failed`
         })
     }
 };
@@ -43,7 +51,7 @@ const createRegion = async (req, res) => {
     try {
         const newRegion = await Regions.create(region);
         console.log("region entered", newRegion);
-        res.status(200).json({
+        res.status(201).json({
             success:true, 
             message: `${req.method} - request to Region endpoint`
         });
@@ -64,9 +72,9 @@ const deleteRegionById = async (req, res) => {
     try {
         const deleteRegion = await Regions.findByIdAndDelete(id);
         console.log("data >>>", deleteRegion);
-        res.status(200).json({
+        res.status(202).json({
             success:true, 
-            message: `${req.method} - request to Region endpoint. ${deleteRegion.name} is now gone`
+            message: `${req.method} - ${deleteRegion.name} deleted`
         });
     } catch (error) {
         console.log(error);
@@ -85,17 +93,19 @@ const updateRegionById = async (req, res) => {
     console.log(update); 
     try {
         await Regions.findByIdAndUpdate(id, update, {new:true});
-        res.status(200).json({
+        res.status(202).json({
             data: [update, id],
             success:true, 
             message: `${req.method} - request to Region endpoint.`
         });
     } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message:`update failed: Id not found OR value doesn't exist`
-        })
+        if (error.name == "ValidationError") {
+            console.error("Error Validation!", error);
+            res.status(422).json(error)
+        } else {
+            console.log(error);
+            res.status(500).json(error)
+        }
     }
 };
 
