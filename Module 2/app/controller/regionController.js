@@ -52,6 +52,8 @@ const createRegion = async (req, res) => {
         const newRegion = await Regions.create(region);
         console.log("region entered", newRegion);
         res.status(201).json({
+            dataInput: region,
+            data: newRegion,
             success:true, 
             message: `${req.method} - request to Region endpoint`
         });
@@ -68,14 +70,31 @@ const createRegion = async (req, res) => {
 
 const deleteRegionById = async (req, res) => {
     // http://localhost:3000/pokedex/regions/id
+    // Validators aren't working for some reason
     const {id} = req.params;
+    const allRegions = await Regions.find({});
+    console.log(allRegions);
+    const idValidation = allRegions.map((e) => e._id.toString());
     try {
-        const deleteRegion = await Regions.findByIdAndDelete(id);
-        console.log("data >>>", deleteRegion);
-        res.status(202).json({
-            success:true, 
-            message: `${req.method} - ${deleteRegion.name} deleted`
-        });
+        if (idValidation.indexOf(id)!== -1) {
+            const deleteRegion = await Regions.findByIdAndDelete(id);
+            console.log("data >>>", deleteRegion);
+            const newAllRegions = await Regions.find({});
+            res.status(202).json({
+                allRegionsData: newAllRegions,
+                deletedData: deleteRegion,
+                data: id,
+                success:true, 
+                message: `${req.method} method - ${deleteRegion.name} deleted`
+            });
+        } 
+        else {
+            res.status(406).json({
+                success: false, 
+                message: `${req.method} - failed, id does not exist or is not found`
+            });
+        }
+        
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -87,17 +106,104 @@ const deleteRegionById = async (req, res) => {
 
 const updateRegionById = async (req, res) => {
     // http://localhost:3000/pokedex/regions/id
+    // Validations not working.
     const {id} = req.params;
     console.log(id);
     const update = req.body;
     console.log(update); 
+    const allRegions = await Regions.find({});
+    // const updateInfo = await Regions.findByIdAndUpdate(id, update)
+    // // console.log(updateInfo)
+    // try {
+    //         const updateRegion = await Regions.findOneAndUpdate(req.params,update,{new: true});
+    //         res.status(202).json({
+    //             data: console.log(Regions),
+    //             success:true,
+    //             message: `${req.method} - region found.`
+    //         });
+    //     }
+    // catch (error) {
+    //     console.log(error);
+    //     res.status(500).json({
+    //         success: false,
+    //         message:`${req.method} failed`
+    //     })
+    // }
+
+    //  Validations
+    // Temporary Validation
+
+    const idValidation = allRegions.map((e) => e._id.toString());
+
+    console.log(Object.hasOwn(update, "name" || "year" || "description"));
     try {
-        await Regions.findByIdAndUpdate(id, update, {new:true});
-        res.status(202).json({
-            data: [update, id],
-            success:true, 
-            message: `${req.method} - request to Region endpoint.`
-        });
+
+        if (idValidation.indexOf(id)!== -1) {
+            await Regions.findByIdAndUpdate(id, update);
+            if(Object.hasOwn(update, "name")) {
+                const nameValidator = typeof update.name;
+                if (nameValidator === "string"){
+                    await Regions.findByIdAndUpdate(id, update);
+                    res.status(202).json({
+                        data: [update, id],
+                        success:true, 
+                        message: `${req.method} - request to Region endpoint.`
+                    });
+                } 
+                else {
+                    res.status(406).json({
+                        success: false, 
+                        message: `${req.method} failed - please ender a valid name. Must be a string.`
+                    });
+                }
+            }
+            else if (Object.hasOwn(update, "year")) {
+                const yearValidator = typeof update.year;
+                if (yearValidator === "number"){
+                    await Regions.findByIdAndUpdate(id, update);
+                    res.status(202).json({
+                        data: [update, id],
+                        success:true, 
+                        message: `${req.method} - request to Region endpoint.`
+                    });
+                } 
+                else {
+                    res.status(406).json({
+                        success: false, 
+                        message: `${req.method} failed - please enter a valid year. Must be a number.`
+                    });
+                }
+            }
+            else if (Object.hasOwn(update, "description")) {
+                const descriptionValidator = typeof update.description;
+                if (descriptionValidator === "string"){
+                    await Regions.findByIdAndUpdate(id, update);
+                    res.status(202).json({
+                        data: [update, id],
+                        success:true, 
+                        message: `${req.method} - request to Region endpoint.`
+                    });
+                } 
+                else {
+                    res.status(406).json({
+                        success: false, 
+                        message: `${req.method} failed - please enter a valid description. Must be a string`
+                    });
+                }
+            }
+            else {
+                res.status(406).json({
+                    success: false, 
+                    message: `${req.method} - failed, Object Property does not exist or is not found`
+                });
+            }
+        } 
+        else {
+            res.status(406).json({
+                success: false, 
+                message: `${req.method} - failed, id does not exist or is not found`
+            });
+        }
     } catch (error) {
         if (error.name == "ValidationError") {
             console.error("Error Validation!", error);

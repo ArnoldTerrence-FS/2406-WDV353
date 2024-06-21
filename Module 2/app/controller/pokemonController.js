@@ -88,12 +88,13 @@ const deletePokemonById = async (req, res) => {
 
 const updatePokemonById = (req, res) => {
     // http://localhost:3000/pokedex/pokemon/id
+    // Need to correct validations for Regions
     const {id} = req.params;
     try {
         res.status(202).json({
             id,
             success:true,
-            message: `${req.method} - request to Author endpoint`
+            message: `${req.method} accepted`
         });
     } catch (error) {
         if (error.name == "ValidationError") {

@@ -12,9 +12,9 @@ const regionSchema = mongoose.Schema({
     year: {
         // Will probably use a regex in the future. possible between 1900 - 2040
         type: Number,
+        max: 2026,
         required: true,
         min: 1995,
-        max: 2026,
     },
     description: {
         type: String,
