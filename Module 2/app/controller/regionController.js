@@ -137,7 +137,6 @@ const updateRegionById = async (req, res) => {
 
     console.log(Object.hasOwn(update, "name" || "year" || "description"));
     try {
-
         if (idValidation.indexOf(id)!== -1) {
             await Regions.findByIdAndUpdate(id, update);
             if(Object.hasOwn(update, "name")) {
