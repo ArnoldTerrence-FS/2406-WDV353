@@ -43,7 +43,7 @@ const pokemonSchema = mongoose.Schema({
         maxlength: [500, "Description cannot be more than 500 characters"]
     },
     region: {
-        type: mongoose.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         required: [true, "You are required to have a region of origin"],
         ref: "Region",
     },

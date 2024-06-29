@@ -20,7 +20,13 @@ const regionSchema = mongoose.Schema({
         type: String,
         required: [true, "Please add a description of the region"],
         maxlength: [500, "Description cannot be more than 500 characters"],
-    }
+    },
+    pokemon: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Pokemon",
+        },
+    ]
 },
 { 
     timestamps: true

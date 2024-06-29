@@ -1,4 +1,5 @@
 const Pokemon = require("../models/Pokemon");
+const Regions = require("../models/Region")
 
 const getAllPokemon = async (req, res) => {
     // http://localhost:3000/pokedex/pokemon
@@ -51,6 +52,7 @@ const createPokemon = async (req, res) => {
     const {pokemon} = req.body;
     try {
         const newPokemon = await Pokemon.create(pokemon);
+        await Regions.findByIdAndUpdate({_id: pokemon.region}, {$push: {pokemon: newPokemon._id} },{runValidators:true});
         console.log("pokemon entered", newPokemon);
         res.status(201).json({
             dataInput: pokemon,
@@ -78,6 +80,7 @@ const deletePokemonById = async (req, res) => {
     try {
         if (idValidation.indexOf(id)!== -1) {
         const deletePokemon = await Pokemon.findByIdAndDelete(id);
+        await Regions.findByIdAndUpdate({_id: deletePokemon.region}, {$pull: {pokemon: deletePokemon._id} },{runValidators:true});
         console.log("data >>>", deletePokemon);
         res.status(202).json({
             success:true, 
