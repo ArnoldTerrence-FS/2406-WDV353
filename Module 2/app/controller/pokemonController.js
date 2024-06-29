@@ -33,7 +33,7 @@ const getPokemonById = async (req, res) => {
             res.status(202).json({
                 data: pokemon,
                 success: true,
-                message: `${req.method} accepted - pokemon found.`
+                message: `${req.method} - pokemon found.`
             });
         }
     } catch (error) {
@@ -53,6 +53,8 @@ const createPokemon = async (req, res) => {
         const newPokemon = await Pokemon.create(pokemon);
         console.log("pokemon entered", newPokemon);
         res.status(201).json({
+            dataInput: pokemon,
+            data: newPokemon,
             success:true, 
             message: `${req.method} - Pokemon Created`
         });
@@ -70,32 +72,56 @@ const createPokemon = async (req, res) => {
 const deletePokemonById = async (req, res) => {
     // http://localhost:3000/pokedex/pokemon/id
     const {id} = req.params;
+    const allPokemon = await Pokemon.find({});
+    console.log(allPokemon);
+    const idValidation = allPokemon.map((e) => e._id.toString());
     try {
+        if (idValidation.indexOf(id)!== -1) {
         const deletePokemon = await Pokemon.findByIdAndDelete(id);
         console.log("data >>>", deletePokemon);
         res.status(202).json({
             success:true, 
             message: `${req.method} - ${deletePokemon.name} deleted`
         });
+        } 
+        else {
+            res.status(406).json({
+                success: false, 
+                message: `${req.method} - failed, id does not exist or is not found`
+            });
+        }
     } catch (error) {
         console.log(error);
         res.status(500).json({
             success: false,
-            message:`delete failed: Id not found.`
+            message:`delete failed: check error`
         })
     }
 };
 
-const updatePokemonById = (req, res) => {
+const updatePokemonById = async (req, res) => {
     // http://localhost:3000/pokedex/pokemon/id
-    // Need to correct validations for Regions
     const {id} = req.params;
+    console.log(id);
+    const allPokemon = await Pokemon.find({});
+    console.log(allPokemon);
+    const idValidation = allPokemon.map((e) => e._id.toString());
+
     try {
-        res.status(202).json({
-            id,
-            success:true,
-            message: `${req.method} accepted`
-        });
+        if (idValidation.indexOf(id)!== -1) {
+            await Pokemon.findByIdAndUpdate(id, req.body,{runValidators:true});
+            res.status(202).json({
+                data: id,
+                success:true,
+                message: `${req.method} method - pokemon has been updated.`
+            });
+        } 
+        else {
+            res.status(406).json({
+                success: false, 
+                message: `${req.method} - failed, id does not exist or is not found`
+            });
+        }
     } catch (error) {
         if (error.name == "ValidationError") {
             console.error("Error Validation!", error);

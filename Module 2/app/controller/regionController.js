@@ -55,7 +55,7 @@ const createRegion = async (req, res) => {
             dataInput: region,
             data: newRegion,
             success:true, 
-            message: `${req.method} - request to Region endpoint`
+            message: `${req.method} - Region Created`
         });
     } catch (error) {
         if (error.name == "ValidationError") {
@@ -98,7 +98,7 @@ const deleteRegionById = async (req, res) => {
         console.log(error);
         res.status(500).json({
             success: false,
-            message:`delete failed: Id not found.`
+            message:`delete failed: check error`
         })
     }
 };
@@ -116,7 +116,7 @@ const updateRegionById = async (req, res) => {
             res.status(202).json({
                 data: id,
                 success:true, 
-                message: `${req.method} method -`
+                message: `${req.method} method - region has been updated.`
             });
         } 
         else {
@@ -126,11 +126,13 @@ const updateRegionById = async (req, res) => {
             });
         }
     } catch(error) {
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message:`delete failed: Id not found.`
-        })
+        if (error.name == "ValidationError") {
+            console.error("Error Validation!", error);
+            res.status(422).json(error)
+        } else {
+            console.log(error);
+            res.status(500).json(error)
+        }
     };
 };
 
