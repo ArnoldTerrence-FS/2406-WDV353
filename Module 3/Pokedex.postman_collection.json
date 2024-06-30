@@ -178,7 +178,7 @@
 							"response": []
 						},
 						{
-							"name": "Query Pages & Limits",
+							"name": "Query Pages & Limits (test ok)",
 							"event": [
 								{
 									"listen": "test",
