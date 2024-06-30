@@ -10,6 +10,241 @@
 			"name": "Pokemon",
 			"item": [
 				{
+					"name": "Querys",
+					"item": [
+						{
+							"name": "Query Type (tests ok)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Extracting Type",
+											"const url = encodeURI(pm.variables.replaceIn(pm.request.url));",
+											"const pathArray = url.split(\"/\");",
+											"const type = pathArray[pathArray.length - 1];",
+											"//End of Extracting Type",
+											"//Extracting data",
+											"const responseData = pm.response.json();",
+											"",
+											"const allPokemon = responseData.allPokemonData;",
+											"const typePokemon = allPokemon.filter((e)=>e.type===type);",
+											"",
+											"const pokemonData = responseData.data;",
+											"//End of Extracting Array",
+											"//Console Logs",
+											"console.log(...pokemonData)",
+											"",
+											"//End of Console Logs",
+											"//Comparing  ",
+											"",
+											"//Tests",
+											"pm.test(\"Only specified of Pokemon are selected\", function () {",
+											"        pm.expect(pokemonData.map(({ name }) => name)).to.include(...typePokemon.map(({ name }) => name))",
+											"    });",
+											"",
+											"pm.test(\"Selected excluded 'type'\", function () {",
+											"        pm.expect(...pokemonData).to.not.have.any.keys('type')",
+											"    });",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/pokedex/pokemon/type/water",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"pokedex",
+										"pokemon",
+										"type",
+										"water"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Query By Name",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/pokedex/pokemon?name=[name]",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"pokedex",
+										"pokemon"
+									],
+									"query": [
+										{
+											"key": "name",
+											"value": "[name]"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Query By Region Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/pokedex/pokemon?region=[regionId]",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"pokedex",
+										"pokemon"
+									],
+									"query": [
+										{
+											"key": "region",
+											"value": "[regionId]"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Query Sort By Name (asc)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/pokedex/pokemon?sort=name",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"pokedex",
+										"pokemon"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "name"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Query Sort By Name (desc)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/pokedex/pokemon?sort=-name",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"pokedex",
+										"pokemon"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "-name"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Query Pages & Limits",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// extracting data",
+											"const responseData = pm.response.json();",
+											"",
+											"const query = pm.request.url.getQueryString();",
+											"const queryArray = query.split(\"$\");",
+											"",
+											"const pageItem = queryArray.shift();",
+											"const page = parseInt(pageItem.substr(5));",
+											"",
+											"const limitItem = queryArray.pop();",
+											"const limit = parseInt(limitItem.substr(6));",
+											"",
+											"const pokemonData = responseData.data;",
+											"const allPokemonData = responseData.allPokemonData;",
+											"",
+											"const pagePokemon = allPokemonData.splice(0+(limit*(page-1)),limit);",
+											"//End of extracting data",
+											"",
+											"//Tests",
+											"pm.test(\"Limited amount of pokemon on page\",function(){",
+											"    pm.expect(pokemonData.length).to.equal(limit);",
+											"});",
+											"",
+											"pm.test(\"Page shows the right pokemon\",function(){",
+											"    pm.expect(...pokemonData.map(({name})=> name)).to.equal(...pagePokemon.map(({name})=> name));",
+											"});",
+											"//End of tests",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/pokedex/pokemon?page=2$limit=4",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"pokedex",
+										"pokemon"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2$limit=4"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "Get Pokemon",
 					"request": {
 						"method": "GET",
@@ -113,12 +348,199 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Update Pokemon",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"    }",
+									");",
+									"// a test that checks to if new data is within the pokemon",
+									"",
+									"// a test that verifies the length of the name and or description"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"name\": \"Buizel\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/pokedex/pokemon/6680550f90032130735c9ff4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokedex",
+								"pokemon",
+								"6680550f90032130735c9ff4"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
 		{
 			"name": "Regions",
 			"item": [
+				{
+					"name": "Querys",
+					"item": [
+						{
+							"name": "Query Region - Year (test ok)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"//Extracting data",
+											"const query = pm.request.url.getQueryString();",
+											"",
+											"const querySelectorsArray = query.match(\"\\\\[.*]\");",
+											"const querySelectors = querySelectorsArray.toString()",
+											"",
+											"let query1 = querySelectors.substring(1,4);",
+											"if (query1.includes(']')) {",
+											"    query1 = querySelectors.substr(1,2);",
+											"}",
+											"",
+											"let query2 = querySelectors.substr(-4,3);",
+											"if (query2.includes('[')) {",
+											"    query2 = querySelectors.substr(-3,2);",
+											"}",
+											"",
+											"const queryArray = query.split(\"&\");",
+											"const yearsArray = queryArray.map((e)=> e.slice(-4));",
+											"",
+											"const year1array = yearsArray.slice(0,1);",
+											"const year1 = parseInt(year1array.toString());",
+											"",
+											"const year2array = yearsArray.slice(1);",
+											"const year2 = parseInt(year2array.toString());",
+											"",
+											"const regionData = pm.response.json();",
+											"//End of Extracting data",
+											"",
+											"//tests will not execute get years if nothing is there",
+											"pm.test(\"Regions are within parameters\", function () {",
+											"    if ((query1 === 'gt') && (query2 === 'gt')){",
+											"        console.log ('using greater than')",
+											"        pm.expect(...regionData.data.map(({ year }) => year)).to.be.above(year1);",
+											"        console.log('greater than')",
+											"    } ",
+											"    else if ((query1 === 'gte') && (query2 === 'gte')){",
+											"        pm.expect(...regionData.data.map(({ year }) => year)).to.be.above(year1-1);",
+											"        console.log('greater than or equal to')",
+											"    }",
+											"    else if ((query1 === 'lt') && (query2 === 'lt')){",
+											"        pm.expect(...regionData.data.map(({ year }) => year)).to.be.below(year1);",
+											"        console.log('Less than');",
+											"    }",
+											"    else if ((query1 === 'lte') && (query2 === 'lte')){",
+											"        pm.expect(...regionData.data.map(({ year }) => year)).to.be.below(year1+1);",
+											"        console.log('Less than or equal to');",
+											"    }",
+											"    else if ((query1 === 'gte') && (query2 === 'lte')){",
+											"        pm.expect(...regionData.data.map(({ year }) => year)).to.be.above(year1-1);",
+											"        pm.expect(...regionData.data.map(({ year }) => year)).to.be.below(year2+1);",
+											"        console.log('gte & lte');",
+											"    }",
+											"    else if ((query1 === 'gte') && (query2 === 'lt')){",
+											"        pm.expect(...regionData.data.map(({ year }) => year)).to.be.above(year1-1);",
+											"        pm.expect(...regionData.data.map(({ year }) => year)).to.be.below(year2);",
+											"        console.log('gte & lt');",
+											"    }",
+											"    else if ((query1 === 'gt') && (query2 === 'lte')){",
+											"        pm.expect(...regionData.data.map(({ year }) => year)).to.be.above(year1);",
+											"        pm.expect(...regionData.data.map(({ year }) => year)).to.be.below(year2+1);",
+											"        console.log('gt & lte');",
+											"    }",
+											"    else if ((query1 === 'gt') && (query2 === 'lt')){",
+											"        pm.expect(...regionData.data.map(({ year }) => year)).to.be.above(year1);",
+											"        pm.expect(...regionData.data.map(({ year }) => year)).to.be.below(year2);",
+											"        console.log('gt & lt');",
+											"    }",
+											"});",
+											"//tests"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/pokedex/regions?year[gte]=1998&year[lte]=2010",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"pokedex",
+										"regions"
+									],
+									"query": [
+										{
+											"key": "year[gte]",
+											"value": "1998"
+										},
+										{
+											"key": "year[lte]",
+											"value": "2010"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Query Pages & Limits",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://localhost:3000/pokedex/pokemon?page=1$limit=2",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "3000",
+									"path": [
+										"pokedex",
+										"pokemon"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1$limit=2"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
 				{
 					"name": "Get Regions",
 					"event": [
