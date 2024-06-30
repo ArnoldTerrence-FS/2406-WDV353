@@ -68,14 +68,6 @@ const getPokemonByTypes = async (req, res) => {
         
         const query = Pokemon.find(type).select('name description region').sort({name: 'asc'});
 
-        // // Pagination
-        // // query = Pokemon.find({});
-        // // const page = parseInt(req.query.page) || 1;
-        // // const limit = parseInt(req.query.limit) || 2;
-        // // const skip = (page - 1 ) * limit;
-
-        // // query.skip(skip).limit(limit);
-
         const pokemon = await query;
         console.log (pokemon);
 
