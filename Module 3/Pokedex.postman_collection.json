@@ -1,0 +1,369 @@
+{
+	"info": {
+		"_postman_id": "77aec141-d89c-4deb-83aa-738bdcbca603",
+		"name": "Pokedex",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30106509"
+	},
+	"item": [
+		{
+			"name": "Pokemon",
+			"item": [
+				{
+					"name": "Get Pokemon",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/pokedex/pokemon",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokedex",
+								"pokemon"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pokemon by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/pokedex/pokemon/id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokedex",
+								"pokemon",
+								"id"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Pokemon",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Value is in valid list\", () => {",
+									"  pm.expect(pm.response.json().type)",
+									"    .to.be.oneOf([\"Subscriber\", \"Customer\", \"User\"]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"pokemon\" : {\n        \"name\": \"Squirtle\",\n        \"type\": \"Water\",\n        \"description\": \"After birth, its back swells and hardens into a shell. It sprays a potent foam from its mouth.\",\n        \"region\": \"6672ba95b30f26e4ea5843ef\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/pokedex/pokemon",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokedex",
+								"pokemon"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Pokemon by Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/pokedex/pokemon/id",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokedex",
+								"pokemon",
+								"id"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Regions",
+			"item": [
+				{
+					"name": "Get Regions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 50ms\", () => {",
+									"  pm.expect(pm.response.responseTime).to.be.below(50);",
+									"});",
+									"",
+									"// Haven't figured out this test yet"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/pokedex/regions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokedex",
+								"regions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Region by Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 50ms\", () => {",
+									"    pm.expect(pm.response.responseTime).to.be.below(50);",
+									"});",
+									"",
+									"",
+									"const regionData = pm.response.json();",
+									"",
+									"pm.test(\"Specific Region has all needed properties\", function () {",
+									"    pm.expect(regionData.data).to.have.any.keys('_id','name','description','year')",
+									"    });",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/pokedex/regions/6672c008b30f26e4ea584402",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokedex",
+								"regions",
+								"6672c008b30f26e4ea584402"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Region",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"    }",
+									");",
+									"",
+									"const newRegionData = pm.response.json();",
+									"console.log(newRegionData.dataInput)",
+									"console.log(newRegionData.data);",
+									"",
+									"pm.test(\"Response has only needed properties\", function () {",
+									"    pm.expect(newRegionData.dataInput).to.have.all.keys('name','description','year')",
+									"    }",
+									");",
+									"",
+									"pm.test(\"New Region generated a new id\", function () {",
+									"    pm.expect(newRegionData.data).to.have.property(\"_id\");",
+									"    pm.expect(newRegionData.data._id).to.have.lengthOf(24);",
+									"    },",
+									"    pm.collectionVariables.set(\"regionId\", newRegionData.data_Id)",
+									");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"region\": {\n        \"name\": \"Huriah\",\n        \"year\": 1998,\n        \"description\": \"To be desired, or to not be.\"\n    }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/pokedex/regions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokedex",
+								"regions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Region by Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"    }",
+									");",
+									"// Trying to figure out if object is gone",
+									"const regionData = pm.response.json();",
+									"",
+									"console.log(regionData.allRegionsData);",
+									"pm.test(\"Data is no longer in collection\", function () {",
+									"    const deleted = regionData.deletedData;",
+									"    pm.expect(regionData.allRegionsData).to.deep.to.not.include(deleted);",
+									"    }",
+									");",
+									"",
+									"//Not sure of a third validation",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/pokedex/regions/6674e63445d610918dd3f17f",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokedex",
+								"regions",
+								"6674e63445d610918dd3f17f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Region",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"    }",
+									");",
+									"// a test that checks to if new data is within the region",
+									"",
+									"// a test that verifies the length of the name and or description"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"name\": \"HooHoo\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/pokedex/regions/6672ba95b30f26e4ea5843ef",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"pokedex",
+								"regions",
+								"6672ba95b30f26e4ea5843ef"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "regionId",
+			"value": ""
+		}
+	]
+}
