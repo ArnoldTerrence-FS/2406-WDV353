@@ -4,11 +4,12 @@ const Regions = require("../models/Region")
 const getAllPokemon = async (req, res) => {
     // http://localhost:3000/pokedex/pokemon
     try {
+        const allPokemon = await Pokemon.find({}).sort({name: 'asc'});
         // Comparison Query Operators - numericals /dates
         // Not needed on pokemon but will keep
         let querString = JSON.stringify(req.query);
 
-        querString = querString.replace(/\b(gt|gte|lt|lte)\b/g,(match) => `$${match}`);
+        querString = querString.replace(/\b(gt|gte|lt|lte)\b/g,(match) => `${match}`);
 
         console.log(JSON.parse(querString));
         // Comparison Query Operators
@@ -36,11 +37,16 @@ const getAllPokemon = async (req, res) => {
         if (querString.includes("page")){
 
             query = Pokemon.find({});
-            const page = parseInt(req.query.page) || 1;
-            const limit = parseInt(req.query.limit) || 2;
+            const page = parseInt(req.query.page);
+            console.log(page);
+            const limitSplit = req.query.page.split('=');
+            const limit = parseInt(limitSplit.pop());
+            console.log(limit);
+            //Limit is acting strange. Hardcoding limit;
+            
+            // const limit = parseInt(req.query.limit);
             const skip = (page - 1 ) * limit;
-
-            query.skip(skip).limit(limit).sort(name = "asc");
+            query.skip(skip).limit(limit).sort({name: "asc"});
         }
         //Pagination
 
@@ -48,6 +54,7 @@ const getAllPokemon = async (req, res) => {
         
         res.status(200).json({
             data: pokemon,
+            allPokemonData: allPokemon,
             success:true,
             message: `${req.method} - Request to Pokemon endpoint`
         });
@@ -64,6 +71,8 @@ const getPokemonByTypes = async (req, res) => {
     // http://localhost:3000/pokedex/pokemon
     try {
 
+        const allPokemon = await Pokemon.find({});
+
         const type = req.params;
         
         const query = Pokemon.find(type).select('name description region').sort({name: 'asc'});
@@ -73,6 +82,7 @@ const getPokemonByTypes = async (req, res) => {
 
         res.status(200).json({
             data: pokemon,
+            allPokemonData: allPokemon,
             success:true,
             message: `${req.method} - Request to Pokemon endpoint`
         });
