@@ -11,7 +11,7 @@ function SearchBar({ onSubmit }) {
 
     return (
         <>
-            <h3>Search Bar</h3>
+            <h3>Search Pokemon name</h3>
             <form onSubmit = {onSubmit}>
                 <label htmlFor="search">Search:</label>
                 <input
@@ -21,12 +21,6 @@ function SearchBar({ onSubmit }) {
                     value={term}
                     onChange={handleChange}
                 />
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                />
-                {term.length < 3 && <p>Search term must be at least 3 characters</p>}
                 <button type="submit">Search</button>
             </form>
         </>
